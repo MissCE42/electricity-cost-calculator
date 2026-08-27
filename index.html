@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<title>Strøm-regnskap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root{
+  --pink: #ffd8e9;
+  --pink-strong: #ff8fb8;
+  --pink-deep: #ff6fa5;
+  --lav: #e3d6ff;
+  --lav-strong: #b79bff;
+  --mint: #c9f6e0;
+  --mint-strong: #6fdba0;
+  --butter: #fff2b0;
+  --sky: #cdeeff;
+  --ink: #5b4a72;
+  --ink-soft: #93839f;
+  --bg: #fff6fb;
+  --card: #ffffff;
+  --line: #f2e3f0;
+  --danger: #ff8b7a;
+  --radius: 26px;
+  --shadow: 0 14px 30px -12px rgba(180,120,180,0.28);
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:'Nunito', sans-serif;
+  background:
+    radial-gradient(circle at 8% 8%, var(--butter) 0%, transparent 40%),
+    radial-gradient(circle at 92% 4%, var(--sky) 0%, transparent 38%),
+    radial-gradient(circle at 96% 70%, var(--mint) 0%, transparent 35%),
+    radial-gradient(circle at 4% 85%, var(--lav) 0%, transparent 38%),
+    var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  padding:20px 14px 60px;
+}
+h1,h2,h3{ font-family:'Baloo 2', sans-serif; margin:0; }
+.page{ max-width:640px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
+
+/* ---------- HERO ---------- */
+.hero{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  gap:6px; padding:6px 8px 4px;
+}
+.mascot-wrap{ width:112px; height:112px; position:relative; margin-bottom:4px; }
+.mascot-wrap svg{ width:100%; height:100%; filter:drop-shadow(0 8px 14px rgba(255,140,180,0.35)); animation: bob 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce){ .mascot-wrap svg{ animation:none; } }
+@keyframes bob{ 0%,100%{ transform:translateY(0) rotate(-1deg);} 50%{ transform:translateY(-7px) rotate(1deg);} }
+.sparkle{ position:absolute; font-size:16px; opacity:0; transition:opacity .3s ease; }
+.sparkle.show{ opacity:1; animation: twinkle 1.4s ease-in-out infinite; }
+.sparkle.s1{ top:-4px; left:-6px; animation-delay:0s; }
+.sparkle.s2{ top:2px; right:-10px; animation-delay:.3s; }
+.sparkle.s3{ bottom:6px; left:-14px; animation-delay:.6s; }
+@keyframes twinkle{ 0%,100%{ transform:scale(.8) rotate(0deg); opacity:.5;} 50%{ transform:scale(1.15) rotate(15deg); opacity:1;} }
+.hero h1{ font-size:26px; color:var(--pink-deep); }
+.hero p{ margin:0; color:var(--ink-soft); font-size:14px; max-width:400px; }
+.name-edit-link{
+  background:none; border:none; cursor:pointer; color:var(--pink-strong); font-weight:800;
+  font-size:12px; font-family:'Nunito',sans-serif; padding:2px 6px; margin-bottom:2px;
+}
+.name-edit-link:hover{ text-decoration:underline; }
+.speech{
+  background:#fff; border:2px solid var(--pink); border-radius:18px; padding:8px 14px;
+  font-size:13.5px; font-weight:700; color:var(--pink-deep); margin-top:2px;
+  box-shadow:var(--shadow);
+}
+
+/* ---------- CARDS ---------- */
+.card{
+  background:var(--card); border-radius:var(--radius); padding:20px;
+  box-shadow:var(--shadow); border:1px solid var(--line);
+}
+.card h2{ font-size:18px; color:var(--ink); display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+.card .sub{ color:var(--ink-soft); font-size:12.5px; margin-bottom:14px; line-height:1.5; }
+
+/* ---------- FORM ---------- */
+.field{ margin-bottom:12px; }
+.field label{ display:block; font-size:12.5px; font-weight:800; color:var(--ink); margin-bottom:5px; }
+.field .hint{ font-weight:600; color:var(--ink-soft); font-size:11px; margin-top:4px; }
+.field input, .field select{
+  width:100%; padding:11px 14px; border-radius:16px; border:2px solid var(--line);
+  font-family:'Nunito',sans-serif; font-size:14.5px; font-weight:700; color:var(--ink);
+  background:#fffafd; outline:none; transition:border-color .15s ease, background .15s ease;
+}
+.field input:focus, .field select:focus{ border-color:var(--pink-strong); background:#fff; }
+.field .readonly{
+  padding:11px 14px; border-radius:16px; background:var(--lav); font-weight:800; color:var(--ink);
+  font-size:14.5px; border:2px dashed var(--lav-strong);
+}
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.btn{
+  border:none; cursor:pointer; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:16px;
+  border-radius:18px; padding:13px 20px; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease; width:100%;
+}
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--pink-strong), var(--lav-strong)); color:#fff; box-shadow:0 10px 20px -8px rgba(255,120,170,0.55); }
+.btn-secondary{ background:var(--mint); color:#256b48; }
+.btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid var(--line); }
+.error-box{ background:#fff0ee; color:#c1503f; border:2px solid #ffcfc7; padding:10px 14px; border-radius:14px; font-size:13px; font-weight:700; margin-bottom:12px; }
+
+/* ---------- RESULT ---------- */
+.result-card{ text-align:center; background:linear-gradient(160deg,#fff,#fff6fb); }
+.result-amount{ font-family:'Baloo 2',sans-serif; font-size:44px; color:var(--pink-deep); margin:6px 0 2px; }
+.result-sub{ color:var(--ink-soft); font-size:13px; margin-bottom:14px; }
+.chips{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+.chip{ background:var(--sky); color:#2a6b8a; font-weight:800; font-size:12px; padding:7px 12px; border-radius:999px; }
+.chip.mint{ background:var(--mint); color:#256b48; }
+.chip.butter{ background:var(--butter); color:#8a6f00; }
+
+/* ---------- HISTORY ---------- */
+.history-item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 14px; border-radius:18px; background:#fffafd; border:1px solid var(--line);
+  margin-bottom:9px;
+}
+.history-item .left{ display:flex; flex-direction:column; gap:2px; }
+.history-item .periode{ font-weight:800; font-size:14px; color:var(--ink); }
+.history-item .meta{ font-size:11.5px; color:var(--ink-soft); font-weight:700; }
+.history-item .right{ display:flex; align-items:center; gap:8px; }
+.amount-tag{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:16px; color:var(--pink-deep); }
+.pill-btn{
+  border:none; background:var(--line); color:var(--ink-soft); border-radius:999px; width:30px; height:30px;
+  font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.pill-btn.paid{ background:var(--mint-strong); color:#fff; }
+.pill-btn.edit{ background:var(--sky); color:#2a6b8a; }
+.pill-btn.del{ background:#ffd9d3; color:#c1503f; }
+.empty-state{ text-align:center; padding:22px 10px; color:var(--ink-soft); font-weight:700; font-size:13.5px; }
+
+/* ---------- YEARLY ---------- */
+.year-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
+.year-box{ background:linear-gradient(150deg,var(--lav),#fff); border-radius:18px; padding:14px; text-align:center; }
+.year-box .yr{ font-weight:800; font-size:13px; color:var(--ink-soft); }
+.year-box .val{ font-family:'Baloo 2',sans-serif; font-size:21px; color:var(--pink-deep); margin-top:2px; }
+.year-box .paidval{ font-size:11.5px; font-weight:700; color:#256b48; margin-top:3px; }
+
+/* ---------- CHART ---------- */
+.chart-wrap{ overflow-x:auto; }
+.chart-svg{ display:block; min-width:100%; }
+.bar-label{ font-size:9.5px; fill:var(--ink-soft); font-family:'Nunito',sans-serif; font-weight:700; }
+.bar-value{ font-size:9.5px; fill:var(--pink-deep); font-family:'Nunito',sans-serif; font-weight:800; }
+
+footer{ text-align:center; color:var(--ink-soft); font-size:11.5px; padding-top:6px; }
+</style>
+</head>
+<body>
+<div class="page" id="app"></div>
+
+<script>
+const MONTHS = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember'];
+const STORAGE_KEY = 'stromregnskap-records';
+const LS_KEY = 'stromregnskap-records-v1';
+const NAME_KEY = 'stromregnskap-navn-v1';
+let records = [];
+let editingId = null;
+let loaded = false;
+let userName = '';
+
+function loadName(){
+  try{
+    const v = localStorage.getItem(NAME_KEY);
+    userName = v ? v : '';
+  }catch(e){ userName = ''; }
+}
+function saveName(name){
+  userName = name;
+  try{ localStorage.setItem(NAME_KEY, name); }catch(e){ /* privat/inkognito-modus kan blokkere localStorage */ }
+}
+let storageMode = 'ukjent';
+
+function uid(){ return 'r'+Date.now()+Math.floor(Math.random()*1000); }
+
+function parseNum(str){
+  if(str===null||str===undefined) return NaN;
+  const cleaned = String(str).trim().replace(/\s/g,'').replace(',', '.');
+  if(cleaned==='') return NaN;
+  return parseFloat(cleaned);
+}
+function fmtKr(n){
+  return n.toLocaleString('nb-NO', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtKwh(n){
+  return n.toLocaleString('nb-NO', {minimumFractionDigits:1, maximumFractionDigits:1});
+}
+function todayISO(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function periodeFraDato(iso){
+  const d = new Date(iso);
+  return MONTHS[d.getMonth()][0].toUpperCase()+MONTHS[d.getMonth()].slice(1)+' '+d.getFullYear();
+}
+function sortedRecords(){
+  return [...records].sort((a,b)=> a.dato.localeCompare(b.dato));
+}
+
+async function loadRecords(){
+  // Prøv Claude sin lagring først (fungerer for innloggede Claude-brukere)
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      records = JSON.parse(res.value);
+      storageMode = 'claude';
+      return;
+    }
+  }catch(e){ /* ikke tilgjengelig eller tom - gå videre til localStorage */ }
+
+  // Fallback: nettleserens egen lagring (fungerer alltid, uavhengig av Claude-konto)
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      records = JSON.parse(raw);
+      storageMode = 'local';
+      return;
+    }
+  }catch(e){ /* privat/inkognito-modus kan blokkere localStorage */ }
+
+  records = [];
+  storageMode = 'ingen';
+}
+
+async function persist(){
+  let savedSomewhere = false;
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(records), false);
+    savedSomewhere = true;
+  }catch(e){ /* window.storage ikke tilgjengelig - ok, vi har localStorage */ }
+
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(records));
+    savedSomewhere = true;
+  }catch(e){ console.error('Klarte ikke å lagre i nettleseren', e); }
+
+  storageMode = savedSomewhere ? storageMode : 'ingen';
+}
+
+function lastReading(){
+  const s = sortedRecords();
+  if(s.length===0) return null;
+  return s[s.length-1].nyAvlesning;
+}
+
+function computeRecord(forrige, ny, sumStrom, sumNettleie, totaltKwh){
+  const mittForbruk = ny - forrige;
+  const snittpris = (sumStrom + sumNettleie) / totaltKwh;
+  const belop = snittpris * mittForbruk;
+  return {mittForbruk, snittpris, belop};
+}
+
+function avgBelopExcluding(id){
+  const others = records.filter(r=>r.id!==id);
+  if(others.length===0) return null;
+  return others.reduce((s,r)=>s+r.belop,0)/others.length;
+}
+
+/* ---------------- MASCOT ---------------- */
+function mascotSVG(mood){
+  // mood: 'neutral' | 'happy' | 'surprised' | 'great'
+  let mouth, cheeks='0.55', browY=38;
+  if(mood==='happy' || mood==='great'){
+    mouth = '<path d="M42 58 Q52 70 62 58" stroke="#8a5b3f" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+  } else if(mood==='surprised'){
+    mouth = '<ellipse cx="52" cy="60" rx="6" ry="8" fill="#8a5b3f"/>';
+    cheeks='0.25';
+  } else {
+    mouth = '<path d="M44 60 Q52 64 60 60" stroke="#8a5b3f" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+  }
+  return `
+  <svg viewBox="0 0 104 116" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="52" cy="104" rx="20" ry="6" fill="#f4d9e6" opacity="0.6"/>
+    <rect x="42" y="88" width="20" height="14" rx="5" fill="#8fb8e0"/>
+    <rect x="40" y="98" width="24" height="7" rx="3.5" fill="#2c3a55"/>
+    <circle cx="52" cy="48" r="40" fill="${mood==='great' ? '#fff3b0' : '#fff7d6'}" stroke="#f6dd8a" stroke-width="3"/>
+    <circle cx="36" cy="46" r="5.2" fill="#5b4a72"/>
+    <circle cx="68" cy="46" r="5.2" fill="#5b4a72"/>
+    <circle cx="37.5" cy="44" r="1.6" fill="#fff"/>
+    <circle cx="69.5" cy="44" r="1.6" fill="#fff"/>
+    <circle cx="26" cy="58" r="7" fill="#ffb3c6" opacity="${cheeks}"/>
+    <circle cx="78" cy="58" r="7" fill="#ffb3c6" opacity="${cheeks}"/>
+    ${mouth}
+  </svg>`;
+}
+function renderMascot(mood, msg){
+  const sparkleOn = mood==='great' ? 'show' : '';
+  return `<div class="mascot-wrap">
+    <span class="sparkle s1 ${sparkleOn}">✨</span>
+    <span class="sparkle s2 ${sparkleOn}">💫</span>
+    <span class="sparkle s3 ${sparkleOn}">✨</span>
+    ${mascotSVG(mood)}
+  </div>
+  ${msg ? `<div class="speech">${msg}</div>` : ''}`;
+}
+
+/* ---------------- RENDER ---------------- */
+let lastMood = 'neutral';
+let lastMsg = 'Klar for å regne ut strømmen din? 💡';
+let lastResult = null;
+let formError = '';
+
+function render(){
+  const s = sortedRecords();
+  const forrige = editingId ? records.find(r=>r.id===editingId).forrigeAvlesning : lastReading();
+  const editingRecord = editingId ? records.find(r=>r.id===editingId) : null;
+
+  const app = document.getElementById('app');
+  const heroTitle = userName ? `${userName} sin Strøm-regnskap` : 'Strøm-regnskap';
+  app.innerHTML = `
+    <div class="hero">
+      ${renderMascot(lastMood, lastMsg)}
+      <h1>${heroTitle}</h1>
+      <button type="button" id="editNameBtn" class="name-edit-link">${userName ? '✎ Endre navn' : '✎ Legg til navnet ditt'}</button>
+      <p>Legg inn tallene fra fakturaen og målerstanden din, så regner appen ut din andel automatisk 🌸</p>
+    </div>
+
+    <section class="card">
+      <h2>${editingId ? '✏️ Rediger måling' : '🆕 Ny måling'}</h2>
+      <p class="sub">${s.length===0 ? 'Første gang? Fyll inn forrige målerstand (den du startet fra), så husker appen den til neste gang.' : 'Appen husker forrige målerstand automatisk – du trenger bare å fylle inn det nye tallet.'}</p>
+      ${formError ? `<div class="error-box">${formError}</div>` : ''}
+      <div id="recordForm">
+        ${ (s.length===0 && !editingId) || editingId ? `
+        <div class="field">
+          <label>Forrige målerstand (kWh)</label>
+          <input type="text" inputmode="decimal" id="f_forrige" placeholder="f.eks. 206325,1" value="${editingRecord ? editingRecord.forrigeAvlesning : ''}">
+        </div>` : `
+        <div class="field">
+          <label>Forrige målerstand (kWh)</label>
+          <div class="readonly">⚡ ${fmtKwh(forrige)} kWh</div>
+        </div>`}
+
+        <div class="field">
+          <label>Ny målerstand (kWh)</label>
+          <input type="text" inputmode="decimal" id="f_ny" placeholder="f.eks. 207150,8" value="${editingRecord ? editingRecord.nyAvlesning : ''}">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Sum strøm (kr)</label>
+            <input type="text" inputmode="decimal" id="f_strom" placeholder="fra faktura" value="${editingRecord ? editingRecord.sumStrom : ''}">
+          </div>
+          <div class="field">
+            <label>Sum nettleie (kr)</label>
+            <input type="text" inputmode="decimal" id="f_nettleie" placeholder="kan være negativ" value="${editingRecord ? editingRecord.sumNettleie : ''}">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Totalt forbruk på faktura (kWh)</label>
+          <input type="text" inputmode="decimal" id="f_totalkwh" placeholder="Mengde-feltet på Strøm-linjen" value="${editingRecord ? editingRecord.totaltKwh : ''}">
+          <div class="hint">Dette er kWh-mengden på "Strøm"-linjen i fakturadetaljene (samme tall som på Nettleie-linjene).</div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Dato</label>
+            <input type="date" id="f_dato" value="${editingRecord ? editingRecord.dato : todayISO()}">
+          </div>
+          <div class="field">
+            <label>Periode-navn</label>
+            <input type="text" id="f_periode" placeholder="f.eks. Mai 2026" value="${editingRecord ? editingRecord.periode : ''}">
+          </div>
+        </div>
+
+        <button type="button" id="submitBtn" class="btn btn-primary">${editingId ? '💾 Oppdater' : '✨ Regn ut og lagre'}</button>
+        ${editingId ? `<div style="height:8px"></div><button type="button" id="cancelEdit" class="btn btn-ghost">Avbryt redigering</button>` : ''}
+      </div>
+    </section>
+
+    ${lastResult ? `
+    <section class="card result-card">
+      <h2 style="justify-content:center">💖 Beløp å betale</h2>
+      <div class="result-amount">${fmtKr(lastResult.belop)} kr</div>
+      <div class="result-sub">for ${lastResult.periode}</div>
+      <div class="chips">
+        <span class="chip">⚡ ${fmtKwh(lastResult.mittForbruk)} kWh brukt</span>
+        <span class="chip mint">${lastResult.snittpris.toFixed(4).replace('.',',')} kr/kWh snitt</span>
+      </div>
+    </section>` : ''}
+
+    <section class="card">
+      <h2>📖 Historikk</h2>
+      <p class="sub">Alt du har regnet ut, i oversikt.</p>
+      <div id="historyList">
+        ${s.length===0 ? '<div class="empty-state">Ingen målinger enda – legg inn den første over! 🌷</div>' :
+          [...s].reverse().map(r=>`
+          <div class="history-item">
+            <div class="left">
+              <span class="periode">${r.periode}</span>
+              <span class="meta">${fmtKwh(r.mittForbruk)} kWh · ${r.snittpris.toFixed(3).replace('.',',')} kr/kWh</span>
+            </div>
+            <div class="right">
+              <span class="amount-tag">${fmtKr(r.belop)} kr</span>
+              <button class="pill-btn ${r.betalt?'paid':''}" title="Merk som betalt" data-action="toggle" data-id="${r.id}">${r.betalt?'✓':'○'}</button>
+              <button class="pill-btn edit" title="Rediger" data-action="edit" data-id="${r.id}">✎</button>
+              <button class="pill-btn del" title="Slett" data-action="delete" data-id="${r.id}">✕</button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </section>
+
+    ${s.length>0 ? `
+    <section class="card">
+      <h2>🗓️ Årsoversikt</h2>
+      <p class="sub">Totalt per år, og hvor mye som er markert som betalt.</p>
+      <div class="year-grid">
+        ${yearlyBreakdown(s)}
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📊 Utvikling</h2>
+      <p class="sub">Beløp per måned over tid.</p>
+      <div class="chart-wrap">${chartSVG(s)}</div>
+    </section>` : ''}
+
+    <section class="card">
+      <h2>💾 Sikkerhetskopi</h2>
+      <p class="sub">Dataene lagres i denne nettleseren på denne enheten. Last ned en backup-fil av og til, så mister du aldri historikken selv om du bytter enhet eller nettleser.</p>
+      <div class="row2">
+        <button type="button" id="exportBtn" class="btn btn-secondary">📥 Last ned backup</button>
+        <button type="button" id="importBtn" class="btn btn-ghost">📤 Last opp backup</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </section>
+
+    <footer>Laget med 💕 for å holde styr på strømmen<br>Dataene lagres i nettleseren din på denne enheten – bruk samme lenke og nettleser hver gang (ikke privat/inkognito-modus) 🔒</footer>
+  `;
+
+  document.getElementById('submitBtn').addEventListener('click', onSubmit);
+  const cancelBtn = document.getElementById('cancelEdit');
+  if(cancelBtn) cancelBtn.addEventListener('click', ()=>{ editingId=null; formError=''; render(); });
+  document.getElementById('historyList').addEventListener('click', onHistoryClick);
+  document.getElementById('exportBtn').addEventListener('click', exportBackup);
+  document.getElementById('importBtn').addEventListener('click', ()=> document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', importBackup);
+  document.getElementById('editNameBtn').addEventListener('click', ()=>{
+    const input = prompt('Hva heter du? (vises kun for deg, lagres i din nettleser)', userName || '');
+    if(input !== null){
+      saveName(input.trim());
+      render();
+    }
+  });
+}
+
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = todayISO();
+  a.href = url;
+  a.download = `strom-backup-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importBackup(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try{
+      const imported = JSON.parse(evt.target.result);
+      if(!Array.isArray(imported)) throw new Error('Filen inneholder ikke en gyldig liste med målinger.');
+      const byId = {};
+      records.forEach(r=> byId[r.id] = r);
+      imported.forEach(r=> { if(r && r.id) byId[r.id] = r; });
+      records = Object.values(byId);
+      persist();
+      lastResult = null;
+      formError = '';
+      render();
+      alert('Backup lastet inn! ' + imported.length + ' målinger ble lagt til/oppdatert.');
+    }catch(err){
+      formError = 'Klarte ikke å lese backup-filen: ' + err.message;
+      render();
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function yearlyBreakdown(s){
+  const byYear = {};
+  s.forEach(r=>{
+    const y = r.dato.slice(0,4);
+    if(!byYear[y]) byYear[y] = {total:0, paid:0};
+    byYear[y].total += r.belop;
+    if(r.betalt) byYear[y].paid += r.belop;
+  });
+  return Object.keys(byYear).sort().reverse().map(y=>`
+    <div class="year-box">
+      <div class="yr">${y}</div>
+      <div class="val">${fmtKr(byYear[y].total)} kr</div>
+      <div class="paidval">✅ ${fmtKr(byYear[y].paid)} kr betalt</div>
+    </div>`).join('');
+}
+
+function chartSVG(s){
+  const w = Math.max(360, s.length*64);
+  const h = 160;
+  const padB = 34, padT = 14;
+  const max = Math.max(...s.map(r=>r.belop), 1);
+  const barW = 34;
+  const gap = (w - 20) / s.length;
+  let bars = '';
+  s.forEach((r,i)=>{
+    const bh = ((h-padB-padT) * (r.belop/max));
+    const x = 12 + i*gap + (gap-barW)/2;
+    const y = h - padB - bh;
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="8" fill="url(#g1)"/>`;
+    bars += `<text x="${x+barW/2}" y="${h-padB+14}" text-anchor="middle" class="bar-label">${r.periode.split(' ')[0].slice(0,3)}</text>`;
+    bars += `<text x="${x+barW/2}" y="${y-5}" text-anchor="middle" class="bar-value">${Math.round(r.belop)}</text>`;
+  });
+  return `<svg class="chart-svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8fb8"/><stop offset="100%" stop-color="#b79bff"/>
+    </linearGradient></defs>
+    <line x1="10" y1="${h-padB}" x2="${w-10}" y2="${h-padB}" stroke="#f2e3f0" stroke-width="2"/>
+    ${bars}
+  </svg>`;
+}
+
+function onSubmit(){
+ try{
+  formError = '';
+  const s = sortedRecords();
+  const isFirst = s.length===0 && !editingId;
+
+  let forrigeVal;
+  if(isFirst || editingId){
+    forrigeVal = parseNum(document.getElementById('f_forrige').value);
+  } else {
+    forrigeVal = lastReading();
+  }
+  const nyVal = parseNum(document.getElementById('f_ny').value);
+  const sumStrom = parseNum(document.getElementById('f_strom').value);
+  const sumNettleie = parseNum(document.getElementById('f_nettleie').value);
+  const totaltKwh = parseNum(document.getElementById('f_totalkwh').value);
+  const dato = document.getElementById('f_dato').value || todayISO();
+  let periode = document.getElementById('f_periode').value.trim();
+  if(!periode) periode = periodeFraDato(dato);
+
+  if([forrigeVal, nyVal, sumStrom, sumNettleie, totaltKwh].some(v=>isNaN(v))){
+    formError = 'Hmm, sjekk at alle feltene er fylt ut med tall 🌸 (husk at forrige målerstand må fylles inn første gang)';
+    render(); return;
+  }
+  if(nyVal <= forrigeVal){
+    formError = 'Ny målerstand må være høyere enn forrige målerstand.';
+    render(); return;
+  }
+  if(totaltKwh <= 0){
+    formError = 'Totalt forbruk på faktura må være større enn 0.';
+    render(); return;
+  }
+
+  const {mittForbruk, snittpris, belop} = computeRecord(forrigeVal, nyVal, sumStrom, sumNettleie, totaltKwh);
+
+  const record = {
+    id: editingId || uid(),
+    dato, periode,
+    forrigeAvlesning: forrigeVal,
+    nyAvlesning: nyVal,
+    sumStrom, sumNettleie, totaltKwh,
+    mittForbruk, snittpris, belop,
+    betalt: editingId ? records.find(r=>r.id===editingId).betalt : false
+  };
+
+  if(editingId){
+    records = records.map(r=> r.id===editingId ? record : r);
+  } else {
+    records.push(record);
+  }
+
+  const avg = avgBelopExcluding(record.id);
+  if(avg===null){
+    lastMood='neutral'; lastMsg='Første måling lagret! Nå husker jeg målerstanden din 🌷';
+  } else if(belop < avg*0.9){
+    lastMood='great'; lastMsg='Yay, billigere enn vanlig! Sparegris-modus 🐷✨';
+  } else if(belop <= avg*1.1){
+    lastMood='happy'; lastMsg='Helt vanlig måned, fint jobbet! 🌸';
+  } else {
+    lastMood='surprised'; lastMsg='Uffda, litt dyrere denne gangen 😳';
+  }
+
+  lastResult = {belop, mittForbruk, snittpris, periode};
+  editingId = null;
+  formError = '';
+  persist();
+  render();
+ } catch(err){
+  formError = 'Oisann, noe gikk galt: ' + (err && err.message ? err.message : err);
+  render();
+ }
+}
+
+function onHistoryClick(e){
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  const action = btn.dataset.action;
+  if(action==='toggle'){
+    records = records.map(r=> r.id===id ? {...r, betalt: !r.betalt} : r);
+    persist(); render();
+  } else if(action==='delete'){
+    if(confirm('Slette denne målingen?')){
+      records = records.filter(r=>r.id!==id);
+      persist(); render();
+    }
+  } else if(action==='edit'){
+    editingId = id;
+    formError='';
+    render();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+(async function init(){
+  document.getElementById('app').innerHTML = `<div class="hero">${renderMascot('neutral','Laster inn... 🌸')}</div>`;
+  loadName();
+  await loadRecords();
+  render();
+})();
+</script>
+</body>
+</html>
