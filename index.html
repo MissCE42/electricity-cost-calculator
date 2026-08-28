@@ -2,7 +2,7 @@
 <html lang="nb">
 <head>
 <meta charset="UTF-8">
-<title>Strøm-regnskap</title>
+<title>Strømregnskap</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
@@ -310,7 +310,7 @@ function render(){
   const editingRecord = editingId ? records.find(r=>r.id===editingId) : null;
 
   const app = document.getElementById('app');
-  const heroTitle = userName ? `${userName} sin Strøm-regnskap` : 'Strøm-regnskap';
+  const heroTitle = userName ? `${userName} sitt strømregnskap` : 'Strømregnskap';
   app.innerHTML = `
     <div class="hero">
       ${renderMascot(lastMood, lastMsg)}
